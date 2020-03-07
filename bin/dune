@@ -1,0 +1,12 @@
+(executable (name ReLocalStorageApp)
+    (modules (:standard \ ReLocalStorageBinPesyModules))
+    (public_name ReLocalStorageApp.exe)
+    (libraries re-local-storage.bin.pesy-modules)
+    (flags -open ReLocalStorageBinPesyModules))
+(library (public_name re-local-storage.bin.pesy-modules)
+    (name ReLocalStorageBinPesyModules)
+    (modules ReLocalStorageBinPesyModules)
+    (libraries re-local-storage.library))
+(rule
+    (with-stdout-to ReLocalStorageBinPesyModules.re
+        (run echo "module Library = ReLocalStorageLibrary;")))

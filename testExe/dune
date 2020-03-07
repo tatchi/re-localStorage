@@ -1,0 +1,12 @@
+(executable (name RunReLocalStorageTests)
+    (modules (:standard \ ReLocalStorageTestExePesyModules))
+    (public_name RunReLocalStorageTests.exe)
+    (libraries re-local-storage.testExe.pesy-modules)
+    (flags -open ReLocalStorageTestExePesyModules))
+(library (public_name re-local-storage.testExe.pesy-modules)
+    (name ReLocalStorageTestExePesyModules)
+    (modules ReLocalStorageTestExePesyModules)
+    (libraries re-local-storage.test))
+(rule
+    (with-stdout-to ReLocalStorageTestExePesyModules.re
+        (run echo "module Test = ReLocalStorageTest;")))

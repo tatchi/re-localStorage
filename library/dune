@@ -1,0 +1,16 @@
+(library (name ReLocalStorageLibrary) (public_name re-local-storage.library)
+    (modules (:standard \ ReLocalStorageLibraryPesyModules))
+    (libraries re-local-storage.library.pesy-modules)
+    (flags -open ReLocalStorageLibraryPesyModules)
+    (preprocess (pps lwt_ppx)))
+(library (public_name re-local-storage.library.pesy-modules)
+    (name ReLocalStorageLibraryPesyModules)
+    (modules ReLocalStorageLibraryPesyModules)
+    (libraries console.lib lwt lwt.unix pastel.lib))
+(rule
+    (with-stdout-to ReLocalStorageLibraryPesyModules.re
+        (run echo
+             "module Console = Console;\
+            \nmodule Pastel = Pastel;\
+            \nmodule Lwt = Lwt;\
+            \nmodule Lwt_unix = Lwt_unix;")))
