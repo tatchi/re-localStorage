@@ -53,7 +53,7 @@ let getItem = (key, {filename}) => {
 
 let removeItem = (key, {filename}) => {
   readFromFile(filename)
-  >|= (
+  >>= (
     hashtbl => {
       Hashtbl.remove(hashtbl, key);
       writeToFile(filename, hashtbl);
