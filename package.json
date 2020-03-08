@@ -82,6 +82,6 @@
     "@opam/merlin": "*",
     "ocaml": "~4.7.0",
     "@opam/odoc": "*",
-    "@pesy/esy-pesy": "0.1.0-alpha.2"
+    "@pesy/esy-pesy": "0.1.0-alpha.5"
   }
 }
