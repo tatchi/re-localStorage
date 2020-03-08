@@ -1,7 +1,13 @@
 type t;
 
-let create: string => t;
+let load: (~filename: string) => t;
 
-let getItem: (string, t) => Lwt.t(option(string));
-let setItem: (string, string, t) => Lwt.t(unit);
-let removeItem: (string, t) => Lwt.t(unit);
+let setItem: (string, string, t) => unit;
+
+let getItem: (string, t) => option(string);
+
+let persist: t => unit;
+
+/* let getItem: (string, t) => option(string);
+   let setItem: (string, string, t) => unit;
+   let removeItem: (string, t) => unit; */

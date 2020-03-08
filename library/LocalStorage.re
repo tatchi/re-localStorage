@@ -1,62 +1,39 @@
 open Lwt.Infix;
 
-type t = {filename: string};
-
-let create = (filename: string) => {
-  {filename: filename ++ ".bin"};
+type t = {
+  filename: string,
+  data: Hashtbl.t(string, string),
 };
-
-let readFromFile = (filename: string): Lwt.t(Hashtbl.t(string, string)) => {
-  try%lwt(
-    Lwt_io.open_file(~mode=Input, ~flags=[O_RDONLY, O_NONBLOCK], filename)
-    >>= Lwt_io.read_value
-  ) {
-  | _ => Lwt.return(Hashtbl.create(0))
+let readFromFile = (~filename) => {
+  switch (Pervasives.open_in(filename)) {
+  | input =>
+    let hashtbl: Hashtbl.t(string, string) = Pervasives.input_value(input);
+    Pervasives.close_in(input);
+    hashtbl;
+  | exception (Sys_error(message)) => Hashtbl.create(0)
   };
 };
 
-let writeToFile = (filename: string, content) => {
-  Lwt_io.open_file(
-    ~mode=Output,
-    ~flags=[O_WRONLY, O_NONBLOCK, O_CREAT],
-    filename,
-  )
-  >>= (
-    file =>
-      Lwt.finalize(
-        _ => Lwt_io.write_value(file, content),
-        _ => Lwt_io.close(file),
-      )
-  );
+let writeToFile = (~filename, data) => {
+  let output = Pervasives.open_out(filename);
+  Pervasives.output_value(output, data);
+  Pervasives.close_out(output);
 };
 
-let setItem = (key: string, value: string, {filename}) => {
-  readFromFile(filename)
-  >>= (
-    hashtbl => {
-      Hashtbl.replace(hashtbl, key, value);
-      writeToFile(filename, hashtbl);
-    }
-  );
-};
-let getItem = (key, {filename}) => {
-  readFromFile(filename)
-  >|= (
-    hashtbl => {
-      switch (Hashtbl.find(hashtbl, key)) {
-      | value => Some(value)
-      | exception Not_found => None
-      };
-    }
-  );
+let load = (~filename) => {
+  {filename, data: readFromFile(~filename)};
 };
 
-let removeItem = (key, {filename}) => {
-  readFromFile(filename)
-  >>= (
-    hashtbl => {
-      Hashtbl.remove(hashtbl, key);
-      writeToFile(filename, hashtbl);
-    }
-  );
+let setItem = (key: string, value: string, storage: t) => {
+  Hashtbl.replace(storage.data, key, value);
 };
+
+let getItem = (key: string, storage: t): option(string) => {
+  switch (Hashtbl.find(storage.data, key)) {
+  | value => Some(value)
+  | exception Not_found => None
+  };
+};
+
+let persist = storage =>
+  writeToFile(~filename=storage.filename, storage.data);
